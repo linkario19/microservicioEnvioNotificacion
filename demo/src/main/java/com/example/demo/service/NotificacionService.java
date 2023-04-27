@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Notificacion;
 import com.example.demo.entity.Notificacion.*;
+import com.example.demo.entity.NotificacionNueva;
 import com.example.demo.repository.NotificacionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,12 @@ public class NotificacionService {
     }
 
     //Crea una notificacion
-    public Notificacion createNotificacion(Notificacion notificacion){
-        notificacion.setEstado(Estado.ENVIADO);
-        notificacion.setMomentoRealEnvio(new Date());
+    public Notificacion createNotificacion(NotificacionNueva notificacionNueva){
+        Notificacion notificacion = new Notificacion();
+        notificacion = notificacionNueva.toNotificacion();
+        notificacion.setEstado(Estado.PENDIENTE);
+        Integer id = notificacionRepository.findAll().size() + 1;
+        notificacion.setId(id.longValue());
         return notificacionRepository.save(notificacion);
     }
 
@@ -44,16 +48,28 @@ public class NotificacionService {
         notificacionDB.setCuerpo(notificacion.getCuerpo());
         notificacionDB.setEstado(notificacion.getEstado());
         notificacionDB.setEmailDestino(notificacion.getEmailDestino());
+        notificacionDB.setProgramacionEnvio(notificacion.getProgramacionEnvio());
+        notificacionDB.setMedios(notificacion.getMedios());
+        notificacionDB.setTipo(notificacion.getTipo());
+        notificacionDB.setMensajeError(notificacion.getMensajeError());
+        notificacionDB.setMomentoRealEnvio(notificacion.getMomentoRealEnvio());
         return notificacionRepository.save(notificacionDB);
     }
 
     //Borra una notificacion
 
-    public void deleteNotificacion(Long id){
+    public Notificacion deleteNotificacion(Long id){
         Notificacion notificacionDB = getNotificacion(id);
         if(notificacionDB!=null) {
             notificacionRepository.deleteById(id);
         }
+        return notificacionDB;
+    }
+
+    //Aborta una notificacion
+    public Notificacion abortarNotificacion(Notificacion notificacion){
+        notificacion.setEstado(Estado.ABORTADA);
+        return notificacionRepository.save(notificacion);
     }
 
     //Encuentra notificaciones filtradas por estado

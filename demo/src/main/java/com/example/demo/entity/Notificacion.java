@@ -15,6 +15,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor @NoArgsConstructor @Builder
 public class Notificacion {
+
 	public enum Estado {
 		PENDIENTE, ENVIADO, ABORTADA, ERROR
 	}
@@ -40,7 +41,7 @@ public class Notificacion {
 	private Date programacionEnvio;
 
 	@Enumerated(EnumType.STRING)
-	private Medio medio;
+	private Medio[] medios;
 
 	@Enumerated(EnumType.STRING)
 	private Tipo tipo;
@@ -52,4 +53,5 @@ public class Notificacion {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date momentoRealEnvio;
+
 }

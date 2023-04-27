@@ -2,16 +2,20 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Notificacion;
 import com.example.demo.entity.Notificacion.*;
+import com.example.demo.entity.NotificacionNueva;
 import com.example.demo.service.NotificacionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/notificaciones")
@@ -54,8 +58,50 @@ public class NotificacionController {
     }
 
     @PostMapping
-    public ResponseEntity<Notificacion> postNotificacion(@RequestBody Notificacion notificacion){
-        Notificacion notificacionCreate = notificacionService.createNotificacion(notificacion);
+    public ResponseEntity<Notificacion> postNotificacion(@RequestBody NotificacionNueva notificacionNueva){
+        Notificacion notificacionCreate = notificacionService.createNotificacion(notificacionNueva);
         return ResponseEntity.status(HttpStatus.CREATED).body(notificacionCreate);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Notificacion> putNotificacion(@PathVariable("id") Long id, @RequestBody Notificacion notificacion){
+        notificacion.setId(id);
+        Notificacion notificacionDB = notificacionService.updateNotificacion(notificacion);
+        if(notificacionDB == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(notificacionDB);
+
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Notificacion> deleteNotificacion(@PathVariable("id") Long id){
+        Notificacion notificacionDB = notificacionService.getNotificacion(id);
+        if (notificacionDB == null) {
+            return ResponseEntity.notFound().build();
+        }else {
+            notificacionService.deleteNotificacion(id);
+            return ResponseEntity.ok(notificacionDB);
+        }
+    }
+
+    @PostMapping("/pendientes/abortar")
+    public ResponseEntity<List<Notificacion>> abortarPendientes(@RequestParam(name="tipo", required = false) Tipo tipo){
+        List<Notificacion> listaPendientes = notificacionService.findByEstado(Estado.PENDIENTE);
+        if(listaPendientes.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }else {
+            if (tipo != null) {
+                List<Notificacion> notificacionesTipo = notificacionService.findByTipo(tipo);
+                listaPendientes.retainAll(notificacionesTipo);
+                if(listaPendientes.isEmpty()){
+                    return ResponseEntity.notFound().build();
+                }
+            }
+            for (Notificacion n : listaPendientes){
+                notificacionService.abortarNotificacion(n);
+            }
+            return ResponseEntity.ok(listaPendientes);
+        }
     }
 }
