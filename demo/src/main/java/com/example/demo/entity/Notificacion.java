@@ -37,6 +37,9 @@ public class Notificacion {
 
 	private String emailDestino;
 
+
+	private String telefonoDestino;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date programacionEnvio;
 

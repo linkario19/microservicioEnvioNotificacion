@@ -34,6 +34,7 @@ public class NotificacionNueva implements Serializable {
             notificacion.setAsunto(asunto);
             notificacion.setCuerpo(cuerpo);
             notificacion.setEmailDestino(emailDestino);
+            notificacion.setTelefonoDestino((telefonoDestino));
             notificacion.setTipo(tipoNotificacion);
             notificacion.setMedios(medios);
             notificacion.setProgramacionEnvio(programacionEnvio);

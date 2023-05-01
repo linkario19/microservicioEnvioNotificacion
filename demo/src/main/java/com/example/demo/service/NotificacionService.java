@@ -44,15 +44,7 @@ public class NotificacionService {
         if(notificacionDB==null){
             return null;
         }
-        notificacionDB.setAsunto(notificacion.getAsunto());
-        notificacionDB.setCuerpo(notificacion.getCuerpo());
-        notificacionDB.setEstado(notificacion.getEstado());
-        notificacionDB.setEmailDestino(notificacion.getEmailDestino());
-        notificacionDB.setProgramacionEnvio(notificacion.getProgramacionEnvio());
-        notificacionDB.setMedios(notificacion.getMedios());
-        notificacionDB.setTipo(notificacion.getTipo());
-        notificacionDB.setMensajeError(notificacion.getMensajeError());
-        notificacionDB.setMomentoRealEnvio(notificacion.getMomentoRealEnvio());
+        notificacionDB = notificacion;
         return notificacionRepository.save(notificacionDB);
     }
 
