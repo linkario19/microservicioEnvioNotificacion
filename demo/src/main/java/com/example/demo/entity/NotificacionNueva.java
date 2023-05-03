@@ -27,7 +27,7 @@ public class NotificacionNueva implements Serializable {
     private String telefonoDestino;
     private Date programacionEnvio;
     private Notificacion.Medio[] medios;
-    private Notificacion.Tipo tipoNotificacion;
+    private Notificacion.Tipo tipo;
 
         public Notificacion toNotificacion() {
             Notificacion notificacion = new Notificacion();
@@ -35,7 +35,7 @@ public class NotificacionNueva implements Serializable {
             notificacion.setCuerpo(cuerpo);
             notificacion.setEmailDestino(emailDestino);
             notificacion.setTelefonoDestino((telefonoDestino));
-            notificacion.setTipo(tipoNotificacion);
+            notificacion.setTipo(tipo);
             notificacion.setMedios(medios);
             notificacion.setProgramacionEnvio(programacionEnvio);
             return notificacion;

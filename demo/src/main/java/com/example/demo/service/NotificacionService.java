@@ -33,8 +33,6 @@ public class NotificacionService {
         Notificacion notificacion = new Notificacion();
         notificacion = notificacionNueva.toNotificacion();
         notificacion.setEstado(Estado.PENDIENTE);
-        Integer id = notificacionRepository.findAll().size() + 1;
-        notificacion.setId(id.longValue());
         return notificacionRepository.save(notificacion);
     }
 
