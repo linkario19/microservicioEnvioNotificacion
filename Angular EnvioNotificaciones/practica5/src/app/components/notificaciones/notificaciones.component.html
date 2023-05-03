@@ -1,0 +1,188 @@
+<div>
+    <label>Tipo de notificación:</label>
+    <select [(ngModel)]="tipoSeleccionado" (change)="getAllNotificaciones()">
+      <option [ngValue]="undefined">Todos</option>
+      <option *ngFor="let tipo of tiposNotificacion" [value]="tipo">{{tipo}}</option>
+    </select>
+  </div>
+
+<div>
+    <label for="estado">Estado:</label>
+    <select id="estado" class="custom-select" [(ngModel)]="estadoSeleccionado" (ngModelChange)="getAllNotificaciones()">
+      <option [ngValue]="undefined">Todos</option>
+      <option *ngFor="let estado of estados" [ngValue]="estado">{{estado}}</option>
+    </select>
+</div>
+<div class="form-group col-md-4">
+    <label for="idBuscar">Buscar por ID:</label>
+    <input type="text" class="form-control" id="idBusqueda" [(ngModel)]="idBusqueda" (ngModelChange)="getAllNotificaciones()">
+</div>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Hora programada envio</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let notificacion of notificaciones">
+            <th scope="row">{{ notificacion.id }}</th>
+            <td>{{ notificacion.tipo }}</td>
+            <td>{{ notificacion.estado }}</td>
+            <td>{{ fechaFormateada(notificacion.programacionEnvio) }}</td> 
+            <td>
+                <button class="col-auto btn btn-outline-primary" (click)="cargarNotificacion(notificacion, content3)"><i class="bi bi-eye-fill"></i></button>
+                <button class="col-auto btn btn-outline-primary" (click)="cargarNotificacion(notificacion, content2)">Editar<i class="bi bi-pencil-fill"></i></button>
+                <button class="col-auto btn btn-outline-primary" (click)="mostrarVentanaEliminar(notificacion)">Eliminar<i class="bi bi-trash-fill"></i></button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<button class="btn btn-outline-primary bi bi-plus-lg" style="margin-bottom: 20px" (click)="open(content)"></button>
+
+<div class="d-flex" justify-content-between p-2>
+    <ngb-pagination [collectionSize]="collectionSize" [(page)]="page"  [pageSize]="pageSize" (pageChange)="getAllNotificaciones()">
+    </ngb-pagination>
+    
+    <select class="custom-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="getAllNotificaciones()">
+        <option [ngValue]="6">6 items por página</option>
+        <option [ngValue]="12">12 items por página</option>
+        <option [ngValue]="18">18 items por página</option>
+    </select>
+</div>
+
+<ng-template #content let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">A&ntilde;adir nueva notificacion</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+    <form #formNotificacion="ngForm" (ngSubmit)="guardarNotificacion(formNotificacion?.value)">
+        <div class="modal-body">
+                <div class="form-group">
+
+                    <label for="txtAsunto">Asunto</label>
+                    <input id="txtAsunto" name="asunto" class="form-control" [(ngModel)]="notificacionNueva.asunto" #nombre="ngModel">
+                    <label for="txtCuerpo">Cuerpo</label>
+                    <input id="txtCuerpo" name="cuerpo" class="form-control" [(ngModel)]="notificacionNueva.cuerpo" #cuerpo="ngModel">
+                    <label for="txtEmailDestino">Email destino</label>
+                    <input id="txtEmailDestino" name="emailDestino" class="form-control" [(ngModel)]="notificacionNueva.emailDestino" #emailDestino="ngModel">
+                    <label for="txtTelefonoDestino">Telefono destino</label>
+                    <input id="txtTelefonoDestino" name="telefonoDestino" class="form-control" [(ngModel)]="notificacionNueva.telefonoDestino" #telefonoDestino="ngModel">
+                    <label for="selectTipo">Tipo</label>
+                    <select id="selectTipo" name="tipo" class="form-control" [(ngModel)]="notificacionNueva.tipo" #tipo="ngModel">
+                        <option *ngFor="let tipo of tiposNotificacion" [value]="tipo">{{tipo}}</option>
+                    </select>
+                    <label for="selectMedio">Medio</label>
+                    <select id="selectMedio" name="medios" class="form-control" [(ngModel)]="notificacionNueva.medios" multiple #medios="ngModel">
+                        <option *ngFor="let medios of mediosDispo" [value]="medios">{{medios}}</option>
+                    </select>
+                    <label for="programacionEnvio">Programación envio</label>
+                    <input type="datetime-local" id="programacionEnvio" name="programacionEnvio" class="form-control" [(ngModel)]="notificacionNueva.programacionEnvio">
+
+                </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-outline-dark">Guardar</button>
+            <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Cancelar</button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #content2 let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Editar notificacion</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+    <form #formNotificacion="ngForm" (ngSubmit)="guardarNotificacion(formNotificacion?.value)">
+        <div class="modal-body">
+                <div class="form-group">
+
+                    <label for="txtAsunto">Asunto</label>
+                    <input id="txtAsunto" name="asunto" class="form-control" [(ngModel)]="notificacion.asunto" #nombre="ngModel">
+                    <label for="txtCuerpo">Cuerpo</label>
+                    <input id="txtCuerpo" name="cuerpo" class="form-control" [(ngModel)]="notificacion.cuerpo" #cuerpo="ngModel">
+                    <label for="txtEmailDestino">Email destino</label>
+                    <input id="txtEmailDestino" name="emailDestino" class="form-control" [(ngModel)]="notificacion.emailDestino" #emailDestino="ngModel">
+                    <label for="txtTelefonoDestino">Telefono destino</label>
+                    <input id="txtTelefonoDestino" name="telefonoDestino" class="form-control" [(ngModel)]="notificacion.telefonoDestino" #telefonoDestino="ngModel">
+                    <label for="selectTipo">Tipo</label>
+                    <select id="selectTipo" name="tipo" class="form-control" [(ngModel)]="notificacion.tipo" #tipo="ngModel">
+                        <option *ngFor="let tipo of tiposNotificacion" [value]="tipo">{{tipo}}</option>
+                    </select>
+                    <label for="selectMedio">Medio</label>
+                    <select id="selectMedio" name="medios" class="form-control" [(ngModel)]="notificacion.medios" multiple #medios="ngModel">
+                        <option *ngFor="let medios of mediosDispo" [value]="medios">{{medios}}</option>
+                    </select>
+                    <label for="programacionEnvio">Programación envio</label>
+                    <input type="datetime-local" id="programacionEnvio" name="programacionEnvio" class="form-control" [(ngModel)]="notificacion.programacionEnvio">
+
+                </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-outline-dark">Guardar</button>
+            <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Cancelar</button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #content3 let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Ver notificacion</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+        <div class="container">
+            <div class="row">
+                <h2 >Notificacion <strong>ID</strong>  {{notificacion.id}}</h2>
+            </div>
+        
+            <div class="row" id="asunto">
+                <label class="col-md-3">Asunto:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{notificacion.asunto}}</span>
+            </div>
+            <div class="row" id="cuerpo">
+                <label class="col-md-3">Cuerpo:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{notificacion.cuerpo}}</span>
+            </div>
+            <div class="row" id="emailDestino">
+                <label class="col-md-3">Email:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{notificacion.emailDestino}}</span>
+            </div>
+            <div class="row" id="telefonoDestino">
+                <label class="col-md-3">Teléfono:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{notificacion.telefonoDestino}}</span>
+            </div>
+    
+            <div class="row" id="programacionEnvio">
+                <label class="col-md-3">Programación envio:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{ fechaFormateada(notificacion.programacionEnvio) }}</span>
+            </div>
+
+            <div class="row" id="medios">
+                <label class="col-md-3">Medios:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{notificacion.medios}}</span>
+            </div>
+            <div class="row" id="tipo">
+                <label class="col-md-3">Tipo:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{notificacion.tipo}}</span>
+            </div>
+            <div class="row" id="estado">
+                <label class="col-md-3">Estado:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{notificacion.estado}}</span>
+            </div>
+            <div class="row" id="mensajeError">
+                <label class="col-md-3">Mensaje error:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{notificacion.mensajeError}}</span>
+            </div>
+            <div class="row" id="momentoRealEnvio">
+                <label class="col-md-3">Momento real envio:</label>
+                <span class="col-md-9 offset-2 offset-md-0">{{notificacion.momentoRealEnvio}}</span>
+            </div>
+        </div>
+      
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Atrás</button>
+        </div>
+</ng-template>
